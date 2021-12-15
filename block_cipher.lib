@@ -1,0 +1,79 @@
+proc add(poly p, poly q)
+{ return (p+q); }
+
+proc inv(poly p)
+{ 
+	if(p==0){return (0);}
+	else{return (lift(p,1)[1,1]);} 
+}
+
+proc mix(list l, int i)
+{
+	poly p;
+
+	for(int j=1;j<=size(l);j++)
+	{
+		if(j!=i){ p = p + l[j]; }
+	}
+	
+	return (p);
+}
+
+proc block_cipher(list plain_text,list key)
+{
+	list Add,Inv1,Inv2,Mix,cipher_text;
+	for(int i=1;i<=size(plain_text);i++)
+	{
+		//i;
+		Add[i]=add(plain_text[i],key[i]);//Add[i];
+		Inv1[i]=inv(Add[i]);//Inv1[i];
+	}
+	for(int i=1;i<=size(Inv1);i++)
+	{
+		//i;
+		Mix[i]=mix(Inv1,i);//Mix[i];
+		Add[i]=add(Mix[i],key[i]);//Add[i];
+		Inv2[i]=inv(Add[i]);//Inv2[i];
+		cipher_text[i]=add(Inv2[i],key[i]);
+	}
+	return (cipher_text);
+}
+
+proc fact_list(ideal G)
+{
+	list temp;
+	list exclude = y_0,y_1,y_2,y_3,x_0,x_1,x_2,x_3;
+	for(int i=1;i<=size(G);i++)
+	{
+		temp[1]=univariate(G[i]);
+		if(temp[1]==0){break;}
+		temp[2]=var(univariate(G[1]));
+		if(member(temp[2],exclude)!=1)
+		{
+			temp[3] = factorize(G[i]);
+			printf("Univariate Found: %s",temp[2]);
+			printf("G[%s]",i);
+			temp;
+		}
+		//else{ print("No univariate polynomial found!"); }
+	}
+	print("Finished traversing the GB");
+}
+proc recover_key(list G,poly e_3)
+{
+	// G: List of GB members containing the key bits
+	// 
+	poly k0_recovered = eval(G[1]-k_0);k0_recovered;
+	poly k1_recovered = eval(G[2]-k_1);k1_recovered;
+	poly k2_recovered = (G[3]-k_2);k2_recovered;
+	poly k3_recovered = (G[4]-k_3);k3_recovered;
+
+}
+proc member(poly e,list L)
+{
+	for(int i=1;i<=size(L);i++)
+	{
+		if(e==L[i]){print("MEMBER");return (1);};
+	}
+	return (0);
+}
